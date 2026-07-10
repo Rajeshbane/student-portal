@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 
 import StudentTable from "../../components/StudentTable";
@@ -11,51 +11,66 @@ import {
 } from "../../services/studentService";
 
 export default function Students() {
+
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  async function loadStudents() {
+  const loadStudents = useCallback(async () => {
+
     try {
-      setLoading(true);
 
       const data = await getStudents();
 
       setStudents(data);
-    } catch (error) {
-      console.error("Error loading students:", error);
-      alert("Unable to load students.");
-    } finally {
-      setLoading(false);
-    }
-  }
 
-    useEffect(() => {
-    loadStudents();
+    } catch (error) {
+
+      console.error("Error loading students:", error);
+
+      alert("Unable to load students.");
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
   }, []);
 
+  useEffect(() => {
+
+    loadStudents();
+
+  }, [loadStudents]);
+
   async function handleDelete(id) {
+
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this student?"
     );
 
-    if (!confirmDelete) {
-      return;
-    }
+    if (!confirmDelete) return;
 
     try {
+
       await deleteStudent(id);
 
       alert("Student deleted successfully.");
 
-      loadStudents();
+      await loadStudents();
+
     } catch (error) {
+
       console.error("Delete Error:", error);
 
       alert("Unable to delete student.");
+
     }
+
   }
 
   return (
+
     <main className="p-10">
 
       <div className="flex justify-between items-center mb-6">
@@ -65,24 +80,32 @@ export default function Students() {
         </h1>
 
         <Link href="/students/add">
+
           <button className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded">
             + Add Student
           </button>
+
         </Link>
 
       </div>
 
       {loading ? (
+
         <p className="text-blue-600">
           Loading Students...
         </p>
+
       ) : (
+
         <StudentTable
           students={students}
           onDelete={handleDelete}
         />
+
       )}
 
     </main>
+
   );
+
 }
