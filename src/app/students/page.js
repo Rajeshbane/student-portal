@@ -14,10 +14,6 @@ export default function Students() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadStudents();
-  }, []);
-
   async function loadStudents() {
     try {
       setLoading(true);
@@ -32,6 +28,10 @@ export default function Students() {
       setLoading(false);
     }
   }
+
+    useEffect(() => {
+    loadStudents();
+  }, []);
 
   async function handleDelete(id) {
     const confirmDelete = window.confirm(
