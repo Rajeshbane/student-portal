@@ -6,17 +6,28 @@ pipeline {
         nodejs 'Node22'
     }
 
+    options {
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
-                echo 'Repository checked out successfully.'
+                echo "Checking out source code..."
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                sh 'npm ci'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                sh 'npm run lint'
             }
         }
 
@@ -26,21 +37,32 @@ pipeline {
             }
         }
 
-        stage('Health Check') {
+        stage('Archive Build') {
             steps {
-                sh 'echo "Build Successful"'
+                archiveArtifacts artifacts: '.next/**', fingerprint: true
             }
         }
+
+        stage('Health Check') {
+            steps {
+                sh 'echo "Application Build Successful"'
+            }
+        }
+
     }
 
     post {
 
         success {
-            echo 'Pipeline completed successfully.'
+            echo 'CI Pipeline Completed Successfully'
         }
 
         failure {
-            echo 'Pipeline failed.'
+            echo 'CI Pipeline Failed'
+        }
+
+        always {
+            cleanWs()
         }
 
     }
