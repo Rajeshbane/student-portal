@@ -10,7 +10,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo 'Source code ready'
+                echo 'Repository checked out successfully.'
             }
         }
 
@@ -28,18 +28,21 @@ pipeline {
 
         stage('Health Check') {
             steps {
-                sh 'echo Build completed successfully'
+                sh 'echo "Build Successful"'
             }
         }
     }
 
     post {
+
         success {
-            echo 'CI Pipeline completed successfully.'
+            echo 'Pipeline completed successfully.'
         }
 
         failure {
-            echo 'CI Pipeline failed.'
+            echo 'Pipeline failed.'
         }
+
     }
+
 }
