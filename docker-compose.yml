@@ -1,0 +1,68 @@
+services:
+
+  student-portal:
+    build:
+      context: .
+    container_name: studentportal-dev
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - .env.docker
+
+    depends_on:
+      - mysql
+
+    restart: unless-stopped
+
+    networks:
+      - student-network
+
+  mysql:
+    image: mysql:8.4
+
+    container_name: studentportal-mysql
+
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: student_portal
+      MYSQL_USER: studentuser
+      MYSQL_PASSWORD: student123
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+    networks:
+      - student-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+
+    container_name: studentportal-pma
+
+    restart: unless-stopped
+
+    ports:
+      - "8080:80"
+
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+
+    depends_on:
+      - mysql
+
+    networks:
+      - student-network
+
+volumes:
+  mysql-data:
+
+networks:
+  student-network:
